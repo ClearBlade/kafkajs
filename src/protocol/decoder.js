@@ -1,5 +1,6 @@
 const { KafkaJSInvalidVarIntError, KafkaJSInvalidLongError } = require('../errors')
 const Long = require('../utils/long')
+const JSBI = require('jsbi')
 
 const INT8_SIZE = 1
 const INT16_SIZE = 2
@@ -74,7 +75,7 @@ module.exports = class Decoder {
       last
     this.offset += INT64_SIZE
 
-    return (BigInt(low) << 32n) + BigInt(high)
+    return JSBI.add(JSBI.leftShift(JSBI.BigInt(low), JSBI.BigInt('32')), JSBI.BigInt(high))
   }
 
   readDouble() {

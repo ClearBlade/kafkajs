@@ -1,3 +1,5 @@
+const JSBI = require('jsbi')
+
 /**
  * @exports Long
  * @class A Long class for representing a 64 bit int (BigInt)
@@ -16,7 +18,7 @@ class Long {
    * @inner
    */
   static isLong(obj) {
-    return typeof obj.value === 'bigint'
+    return obj instanceof JSBI
   }
 
   /**
@@ -25,7 +27,7 @@ class Long {
    * @inner
    */
   static fromBits(value) {
-    return new Long(BigInt(value))
+    return new Long(JSBI.BigInt(value))
   }
 
   /**
@@ -36,7 +38,7 @@ class Long {
   static fromInt(value) {
     if (isNaN(value)) return Long.ZERO
 
-    return new Long(BigInt.asIntN(64, BigInt(value)))
+    return new Long(JSBI.asIntN(64, JSBI.BigInt(value)))
   }
 
   /**
@@ -47,7 +49,7 @@ class Long {
   static fromNumber(value) {
     if (isNaN(value)) return Long.ZERO
 
-    return new Long(BigInt(value))
+    return new Long(JSBI.BigInt(value))
   }
 
   /**
@@ -60,9 +62,9 @@ class Long {
     if (typeof val === 'number') return this.fromNumber(val)
     if (typeof val === 'string') return this.fromString(val)
     if (typeof val === 'bigint') return new Long(val)
-    if (this.isLong(val)) return new Long(BigInt(val.value))
+    if (this.isLong(val)) return new Long(JSBI.BigInt(val.value))
 
-    return new Long(BigInt(val))
+    return new Long(JSBI.BigInt(val))
   }
 
   /**
@@ -74,7 +76,7 @@ class Long {
     if (str.length === 0) throw Error('empty string')
     if (str === 'NaN' || str === 'Infinity' || str === '+Infinity' || str === '-Infinity')
       return Long.ZERO
-    return new Long(BigInt(str))
+    return new Long(JSBI.BigInt(str))
   }
 
   /**
@@ -82,7 +84,7 @@ class Long {
    * @returns {boolean}
    */
   isZero() {
-    return this.value === BigInt(0)
+    return JSBI.equal(this.value, JSBI.BigInt(0))
   }
 
   /**
@@ -90,7 +92,7 @@ class Long {
    * @returns {boolean}
    */
   isNegative() {
-    return this.value < BigInt(0)
+    return JSBI.lessThan(this.value, JSBI.BigInt(0))
   }
 
   /**
@@ -99,7 +101,7 @@ class Long {
    * @override
    */
   toString() {
-    return String(this.value)
+    return this.value.toString()
   }
 
   /**
@@ -108,7 +110,7 @@ class Long {
    * @override
    */
   toNumber() {
-    return Number(this.value)
+    return JSBI.toNumber(this.value)
   }
 
   /**
@@ -116,7 +118,7 @@ class Long {
    * @returns {number}
    */
   toInt() {
-    return Number(BigInt.asIntN(32, this.value))
+    return JSBI.toNumber(JSBI.asIntN(32, this.value))
   }
 
   /**
@@ -134,7 +136,7 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftLeft(numBits) {
-    return new Long(this.value << BigInt(numBits))
+    return new Long(JSBI.leftShift(this.value, JSBI.BigInt(numBits)))
   }
 
   /**
@@ -143,7 +145,7 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftRight(numBits) {
-    return new Long(this.value >> BigInt(numBits))
+    return new Long(JSBI.signedRightShift(this.value, JSBI.BigInt(numBits)))
   }
 
   /**
@@ -163,7 +165,7 @@ class Long {
    */
   xor(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return new Long(this.value ^ other.value)
+    return new Long(JSBI.bitwiseXor(this.value, other.value))
   }
 
   /**
@@ -173,7 +175,7 @@ class Long {
    */
   and(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return new Long(this.value & other.value)
+    return new Long(JSBI.bitwiseAnd(this.value, other.value))
   }
 
   /**
@@ -181,7 +183,7 @@ class Long {
    * @returns {!Long}
    */
   not() {
-    return new Long(~this.value)
+    return new Long(JSBI.bitwiseNot(this.value))
   }
 
   /**
@@ -190,7 +192,7 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftRightUnsigned(numBits) {
-    return new Long(this.value >> BigInt.asUintN(64, BigInt(numBits)))
+    return new Long(JSBI.signedRightShift(this.value, JSBI.asUintN(64, JSBI.BigInt(numBits))))
   }
 
   /**
@@ -200,7 +202,7 @@ class Long {
    */
   equals(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return this.value === other.value
+    return JSBI.equal(this.value, other.value)
   }
 
   /**
@@ -210,7 +212,7 @@ class Long {
    */
   greaterThanOrEqual(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return this.value >= other.value
+    return JSBI.greaterThanOrEqual(this.value, other.value)
   }
 
   gte(other) {
@@ -229,7 +231,7 @@ class Long {
    */
   add(addend) {
     if (!Long.isLong(addend)) addend = Long.fromValue(addend)
-    return new Long(this.value + addend.value)
+    return new Long(JSBI.add(this.value, addend.value))
   }
 
   /**
@@ -250,7 +252,7 @@ class Long {
   multiply(multiplier) {
     if (this.isZero()) return Long.ZERO
     if (!Long.isLong(multiplier)) multiplier = Long.fromValue(multiplier)
-    return new Long(this.value * multiplier.value)
+    return new Long(JSBI.multiply(this.value, multiplier.value))
   }
 
   /**
@@ -262,7 +264,7 @@ class Long {
   divide(divisor) {
     if (!Long.isLong(divisor)) divisor = Long.fromValue(divisor)
     if (divisor.isZero()) throw Error('division by zero')
-    return new Long(this.value / divisor.value)
+    return new Long(JSBI.divide(this.value, divisor.value))
   }
 
   /**
@@ -273,9 +275,9 @@ class Long {
    */
   compare(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    if (this.value === other.value) return 0
-    if (this.value > other.value) return 1
-    if (other.value > this.value) return -1
+    if (JSBI.equal(this.value, other.value)) return 0
+    if (JSBI.greaterThan(this.value, other.value)) return 1
+    if (JSBI.greaterThan(other.value, this.value)) return -1
   }
 
   /**
@@ -285,7 +287,7 @@ class Long {
    */
   lessThan(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return this.value < other.value
+    return JSBI.lessThan(this.value, other.value)
   }
 
   /**
@@ -304,7 +306,7 @@ class Long {
    * @returns {number} Signed high bits
    */
   getHighBits() {
-    return Number(BigInt.asIntN(32, this.value >> BigInt(32)))
+    return JSBI.toNumber(JSBI.asIntN(32, JSBI.signedRightShift(this.value, JSBI.BigInt(32))))
   }
 
   /**
@@ -312,7 +314,7 @@ class Long {
    * @returns {number} Signed low bits
    */
   getLowBits() {
-    return Number(BigInt.asIntN(32, this.value))
+    return JSBI.toNumber(JSBI.asIntN(32, this.value))
   }
 }
 
@@ -320,13 +322,13 @@ class Long {
  * Minimum signed value.
  * @type {bigint}
  */
-Long.MIN_VALUE = new Long(BigInt('-9223372036854775808'))
+Long.MIN_VALUE = new Long(JSBI.BigInt('-9223372036854775808'))
 
 /**
  * Maximum signed value.
  * @type {bigint}
  */
-Long.MAX_VALUE = new Long(BigInt('9223372036854775807'))
+Long.MAX_VALUE = new Long(JSBI.BigInt('9223372036854775807'))
 
 /**
  * Signed zero.
