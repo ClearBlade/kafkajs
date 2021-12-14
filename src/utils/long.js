@@ -155,7 +155,7 @@ class Long {
    */
   or(other) {
     if (!Long.isLong(other)) other = Long.fromValue(other)
-    return Long.fromBits(this.value | other.value)
+    return Long.fromBits(JSBI.bitwiseOr(this.value, other.value))
   }
 
   /**

@@ -1,13 +1,14 @@
+const JSBI = require('jsbi')
 const Long = require('./long')
 
-const max = new Long(9223372036854775807n) // max signed int 64
+const max = new Long(JSBI.BigInt('9223372036854775807')) // max signed int 64
 
 describe('Utils > Long', () => {
   describe('Converters', () => {
     it('fromString(str)', () => {
       const nativeOutput = Long.fromString('9007199254740991')
-      expect(nativeOutput).toEqual({ value: 9007199254740991n })
-      expect(typeof nativeOutput.value).toEqual('bigint')
+      expect(nativeOutput).toEqual({ value: JSBI.BigInt('9007199254740991') })
+      expect(nativeOutput.value instanceof JSBI).toEqual(true)
     })
 
     it('toString()', () => {
@@ -20,43 +21,43 @@ describe('Utils > Long', () => {
     it('fromNumber(value)', () => {
       // number
       const numberOutput = Long.fromNumber(12)
-      expect(numberOutput).toEqual({ value: 12n })
-      expect(typeof numberOutput.value).toEqual('bigint')
+      expect(numberOutput).toEqual({ value: JSBI.BigInt('12') })
+      expect(numberOutput.value instanceof JSBI).toEqual(true)
 
       // string
       const stringOutput = Long.fromNumber('12')
-      expect(stringOutput).toEqual({ value: 12n })
-      expect(typeof stringOutput.value).toEqual('bigint')
+      expect(stringOutput).toEqual({ value: JSBI.BigInt('12') })
+      expect(stringOutput.value instanceof JSBI).toEqual(true)
 
       // Long
-      const longOutput = new Long(BigInt(12))
-      expect(longOutput).toEqual({ value: 12n })
-      expect(typeof longOutput.value).toEqual('bigint')
+      const longOutput = new Long(JSBI.BigInt(12))
+      expect(longOutput).toEqual({ value: JSBI.BigInt('12') })
+      expect(longOutput.value instanceof JSBI).toEqual(true)
     })
 
     it('fromValue(value)', () => {
       const output = Long.fromNumber(12)
-      expect(output).toEqual({ value: 12n })
-      expect(typeof output.value).toEqual('bigint')
+      expect(output).toEqual({ value: JSBI.BigInt('12') })
+      expect(output.value instanceof JSBI).toEqual(true)
     })
 
     it('fromInt(value)', () => {
       const output = Long.fromInt(12)
-      expect(output).toEqual({ value: 12n })
-      expect(typeof output.value).toEqual('bigint')
+      expect(output).toEqual({ value: JSBI.BigInt('12') })
+      expect(output.value instanceof JSBI).toEqual(true)
     })
 
     describe('toInt()', () => {
       it('should return an int', () => {
         const maxInt32 = 2 ** 31 - 1
-        const expectedInt = new Long(BigInt(maxInt32)).toInt()
+        const expectedInt = new Long(JSBI.BigInt(maxInt32)).toInt()
         expect(expectedInt).toEqual(2147483647)
         expect(typeof expectedInt).toEqual('number')
       })
 
       it('should wrap around if the number is too big to be represented as an int32', () => {
         const maxInt32 = 2 ** 31 - 1
-        const expectedInt = new Long(BigInt(maxInt32 + 1)).toInt()
+        const expectedInt = new Long(JSBI.BigInt(maxInt32 + 1)).toInt()
         expect(expectedInt).toEqual(-2147483648)
         expect(typeof expectedInt).toEqual('number')
       })
@@ -80,56 +81,56 @@ describe('Utils > Long', () => {
   describe('Operators', () => {
     let input1, input2
     beforeAll(() => {
-      input1 = new Long(BigInt(5))
-      input2 = new Long(BigInt(13))
+      input1 = new Long(JSBI.BigInt(5))
+      input2 = new Long(JSBI.BigInt(13))
     })
 
     describe('Bitwise', () => {
       it('AND', () => {
         const output = input1.and(input2)
-        expect(output).toEqual({ value: 5n })
+        expect(output).toEqual({ value: JSBI.BigInt('5') })
       })
 
       it('OR', () => {
         const output = input1.or(input2)
-        expect(output).toEqual({ value: 13n })
+        expect(output).toEqual({ value: JSBI.BigInt('13') })
       })
 
       it('XOR', () => {
         const output = input1.xor(input2)
-        expect(output).toEqual({ value: 8n })
+        expect(output).toEqual({ value: JSBI.BigInt('8') })
       })
 
       it('NOT', () => {
         const output = input1.not()
-        expect(output).toEqual({ value: -6n })
+        expect(output).toEqual({ value: JSBI.BigInt('-6') })
       })
 
       it('Left shift', () => {
         const output = input1.shiftLeft(1)
-        expect(output).toEqual({ value: 10n })
+        expect(output).toEqual({ value: JSBI.BigInt('10') })
       })
 
       it('Right shift', () => {
         const output = input1.shiftRight(1)
-        expect(output).toEqual({ value: 2n })
+        expect(output).toEqual({ value: JSBI.BigInt('2') })
       })
 
       it('Right shift unsigned', () => {
         const output = input1.shiftRightUnsigned(1)
-        expect(output).toEqual({ value: 2n })
+        expect(output).toEqual({ value: JSBI.BigInt('2') })
       })
     })
 
     describe('Others', () => {
       it('ADD', () => {
         const output = input1.add(input2)
-        expect(output).toEqual({ value: 18n })
+        expect(output).toEqual({ value: JSBI.BigInt('18') })
       })
 
       it('subtract', () => {
         const output = input1.subtract(input2)
-        expect(output).toEqual({ value: -8n })
+        expect(output).toEqual({ value: JSBI.BigInt('-8') })
       })
 
       it('Equal', () => {
@@ -150,7 +151,7 @@ describe('Utils > Long', () => {
 
       it('NEGATE', () => {
         const output = input1.negate()
-        expect(output).toEqual({ value: -5n })
+        expect(output).toEqual({ value: JSBI.BigInt('-5') })
       })
     })
   })
@@ -158,8 +159,8 @@ describe('Utils > Long', () => {
   describe('Other functions', () => {
     let input1, input2
     beforeAll(() => {
-      input1 = new Long(BigInt(5))
-      input2 = new Long(BigInt(13))
+      input1 = new Long(JSBI.BigInt(5))
+      input2 = new Long(JSBI.BigInt(13))
     })
 
     it('getHighBits() & getLowBits()', () => {
@@ -170,7 +171,7 @@ describe('Utils > Long', () => {
       expect(input2.getLowBits()).toEqual(13)
 
       // 128
-      const input = new Long(128n)
+      const input = new Long(JSBI.BigInt('128'))
 
       expect(input.getHighBits()).toEqual(0)
       expect(max.getLowBits()).toEqual(-1)
@@ -178,25 +179,25 @@ describe('Utils > Long', () => {
 
     it('isZero()', () => {
       expect(input1.isZero()).toEqual(false)
-      const zero = new Long(BigInt(0))
+      const zero = new Long(JSBI.BigInt(0))
       expect(zero.isZero()).toEqual(true)
     })
 
     it('isNegative()', () => {
-      expect(new Long(BigInt(-15)).isNegative()).toEqual(true)
-      expect(new Long(BigInt(2)).isNegative()).toEqual(false)
+      expect(new Long(JSBI.BigInt(-15)).isNegative()).toEqual(true)
+      expect(new Long(JSBI.BigInt(2)).isNegative()).toEqual(false)
     })
 
     it('multiply()', () => {
       const mult = input1.multiply(input2)
-      expect(mult).toEqual({ value: 65n })
-      expect(typeof mult.value).toEqual('bigint')
+      expect(mult).toEqual({ value: JSBI.BigInt('65') })
+      expect(mult.value instanceof JSBI).toEqual(true)
     })
 
     it('divide()', () => {
       const divide = input2.divide(input1)
-      expect(divide).toEqual({ value: 2n })
-      expect(typeof divide.value).toEqual('bigint')
+      expect(divide).toEqual({ value: JSBI.BigInt('2') })
+      expect(divide.value instanceof JSBI).toEqual(true)
     })
 
     it('compare()', () => {
