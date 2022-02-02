@@ -18,7 +18,7 @@ class Long {
    * @inner
    */
   static isLong(obj) {
-    return obj instanceof JSBI
+    return obj.value instanceof JSBI
   }
 
   /**
